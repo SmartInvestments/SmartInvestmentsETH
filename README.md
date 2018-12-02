@@ -1,6 +1,6 @@
 # SmartInvestments
 
-[![Build Status](https://travis-ci.org/SmartInvestments/SmartInvestmentsETH.svg?branch=develop)](https://travis-ci.org/SmartInvestments/SmartInvestmentsETH)
+[![Build Status](https://travis-ci.org/SmartInvestments/SmartInvestmentsETH.svg)](https://travis-ci.org/SmartInvestments/SmartInvestmentsETH)
 
 Smart contracts for SmartInvestments ecosystem.
 Safely platform for investing.
