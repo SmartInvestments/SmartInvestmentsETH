@@ -122,7 +122,6 @@ contract SmartInvestments is Ownable, Investments {
     event Deposit(address _addr, uint256 _value);
     event ReferrerDistribute(uint256 _referrerId, uint256 _sum);
     event Withdraw(address _addr, uint256 _sum);
-    event Test(uint256 _a);
 
     struct Investor {
         uint8 level;
