@@ -13,7 +13,6 @@ pragma solidity ^0.4.24;
 
 */
 
-//import "./Math.sol";
 import "./SafeMath.sol";
 import "./Ownable.sol";
 
@@ -197,9 +196,9 @@ contract SmartInvestments is Ownable, Investments {
         marketers.transfer(_sum * marketersPercent / 100);
     }
 
-    function _updateLevel(Investor storage _investor) private {
-
-    }
+//    function _updateLevel(Investor storage _investor) private {
+//
+//    }
 
     function _registerIfNeeded(uint256 _refId) private returns(uint256) {
         if (addressToInvestorId[msg.sender] != 0) return 0;
@@ -222,7 +221,7 @@ contract SmartInvestments is Ownable, Investments {
         investor.totalSum = investor.totalSum.add(msg.value);
 
         _distribute(investor, msg.value);
-        _updateLevel(investor);
+//        _updateLevel(investor);
 
         emit Deposit(msg.sender, msg.value);
         return investor.totalSum;
