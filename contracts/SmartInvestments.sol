@@ -153,6 +153,14 @@ contract SmartInvestments is Ownable, Investments {
         return (investor.level, investor.lastWithdraw, investor.totalSum, investor.referrersByLevel);
     }
 
+    function getInvestorId(address _address) public view returns(uint256) {
+        return addressToInvestorId[_address];
+    }
+
+    function investorsCount() public view returns(uint256) {
+        return investors.length;
+    }
+
     /// @notice update referrersByLevel and referralsByLevel of new investor
     /// @param _newInvestorId the ID of the new investor
     /// @param _refId the ID of the investor who gets the affiliate fee
@@ -174,19 +182,18 @@ contract SmartInvestments is Ownable, Investments {
     /// @param _investor the investor object who gets the affiliate fee
     /// @param _sum value of ethereum for distribute to referrers of investor
     function _distributeReferrers(Investor memory _investor, uint256 _sum) private {
-        if (_investor.totalSum < minSumRef) return;
-
         uint256[] memory referrers = _investor.referrersByLevel;
-        uint16[] memory percents = getRefPercents(_investor.totalSum);
 
-        for (uint i = 0; i < refLevelsCount; i++) {
+        for (uint i = 0; i < refLevelsCount; i++)  {
+            uint256 referrerId = referrers[i];
+
             if (referrers[i] == 0) break;
+//            if (investors[referrerId].totalSum < minSumReferral) continue;
 
+            uint16[] memory percents = getRefPercents(investors[referrerId].totalSum);
             uint256 value = _sum * percents[i] / 10000;
-            if (investorIdToAddress[referrers[i]] != 0x0)
-                investorIdToAddress[referrers[i]].transfer(value);
-
-            emit ReferrerDistribute(referrers[i], value);
+            if (investorIdToAddress[referrerId] != 0x0)
+                investorIdToAddress[referrerId].transfer(value);
         }
     }
 
@@ -195,10 +202,6 @@ contract SmartInvestments is Ownable, Investments {
         developers.transfer(_sum * developersPercent / 100);
         marketers.transfer(_sum * marketersPercent / 100);
     }
-
-//    function _updateLevel(Investor storage _investor) private {
-//
-//    }
 
     function _registerIfNeeded(uint256 _refId) private returns(uint256) {
         if (addressToInvestorId[msg.sender] != 0) return 0;
@@ -221,7 +224,6 @@ contract SmartInvestments is Ownable, Investments {
         investor.totalSum = investor.totalSum.add(msg.value);
 
         _distribute(investor, msg.value);
-//        _updateLevel(investor);
 
         emit Deposit(msg.sender, msg.value);
         return investor.totalSum;

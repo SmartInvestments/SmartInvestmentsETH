@@ -7,7 +7,7 @@ Safely platform for investing.
 
 # Deploying contracts
 
-RinkeBy: [0xdfdc25e3fe903e9fd2f963f4cbe4930a25d4f8c7](https://rinkeby.etherscan.io/address/0xdfdc25e3fe903e9fd2f963f4cbe4930a25d4f8c7)
+RinkeBy: [0x52d2aafd9e3239004d1bcea6e5e51811366ff7ac](https://rinkeby.etherscan.io/address/0x52d2aafd9e3239004d1bcea6e5e51811366ff7ac)
 
 # Test
 1. Install [truffle](http://truffleframework.com) globally with `npm install -g truffle`
