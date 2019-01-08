@@ -11,7 +11,7 @@ contract Ownable {
     event DevelopersChanged(address indexed previousDevelopers, address indexed newDevelopers);
     event MarketersChanged(address indexed previousMarketers, address indexed newMarketers);
 
-    function Ownable() public {
+    constructor() public {
         owner = msg.sender;
     }
 

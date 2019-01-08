@@ -13,7 +13,6 @@ pragma solidity ^0.4.24;
 
 */
 
-import "./SafeMath.sol";
 import "./Ownable.sol";
 
 contract Investments {
@@ -84,14 +83,14 @@ contract Investments {
         programs.push(InvestProgram(200     ether, 420));   // 420%
     }
 
-    function getRefPercents(uint256 _sum) public view returns(uint16[]) {
+    function getRefPercents(uint256 _sum) public view returns(uint16[] memory) {
         for (uint i = 0; i < refLevelsTables; i++) {
             ReferralGroup memory group = refGroups[i];
             if (_sum >= group.minSum && _sum <= group.maxSum) return group.percents;
         }
     }
 
-    function getRefPercentsByIndex(uint256 _index) public view returns(uint16[]) {
+    function getRefPercentsByIndex(uint256 _index) public view returns(uint16[] memory) {
         return refGroups[_index].percents;
     }
 
@@ -101,7 +100,8 @@ contract Investments {
 
     function getProgramPercent(uint256 _totalSum) public view returns(uint256) {
         bool exist = false;
-        for (uint256 i = 0; i < programsCount; i++) {
+        uint256 i = 0;
+        for (; i < programsCount; i++) {
             if (_totalSum >= programs[i].minSum) exist = true;
             else break;
         }
@@ -114,8 +114,6 @@ contract Investments {
 }
 
 contract SmartInvestments is Ownable, Investments {
-    using SafeMath for uint256;
-
     event InvestorRegister(address _addr, uint256 _id);
     event ReferralRegister(address _addr, address _refferal);
     event Deposit(address _addr, uint256 _value);
@@ -123,12 +121,20 @@ contract SmartInvestments is Ownable, Investments {
     event Withdraw(address _addr, uint256 _sum);
 
     struct Investor {
-        uint8 level;
+        // public
         uint256 lastWithdraw;
         uint256 totalSum;                               // total deposits sum
+        uint256 totalWithdraw;
+        uint256 totalReferralIncome;
         uint256[] referrersByLevel;                     // referrers ids
         mapping (uint8 => uint256[]) referralsByLevel;  // all referrals ids
+
+        // private
+        uint256 witharawBuffer;
     }
+
+    uint256 public globalDeposit;
+    uint256 public globalWithdraw;
 
     Investor[] public investors;
     mapping (address => uint256) addressToInvestorId;
@@ -140,17 +146,22 @@ contract SmartInvestments is Ownable, Investments {
     }
 
     constructor() public payable {
-        investors.push(Investor(0, 0, 0, new uint256[](refLevelsCount)));
+        globalDeposit = 0;
+        globalWithdraw = 0;
+        investors.push(Investor(0, 0, 0, 0, new uint256[](refLevelsCount), 0));
     }
 
-    function() public payable {
-        deposit(0);
+    function() external payable {
+        if (msg.value > 0) {
+            deposit(0);
+        } else {
+            withdraw();
+        }
     }
 
-    function getInvestorInfo(uint256 _id) public view returns(uint8, uint256, uint256, uint256[]) {
+    function getInvestorInfo(uint256 _id) public view returns(uint256, uint256, uint256, uint256, uint256[] memory, uint256[] memory) {
         Investor memory investor = investors[_id];
-
-        return (investor.level, investor.lastWithdraw, investor.totalSum, investor.referrersByLevel);
+        return (investor.lastWithdraw, investor.totalSum, investor.totalWithdraw, investor.totalReferralIncome, investor.referrersByLevel, investors[_id].referralsByLevel[uint8(0)]);
     }
 
     function getInvestorId(address _address) public view returns(uint256) {
@@ -169,12 +180,12 @@ contract SmartInvestments is Ownable, Investments {
         investors[_newInvestorId].referrersByLevel[0] = _refId;
 
         for (uint i = 1; i < refLevelsCount; i++) {
-            uint256 refId = investors[refId].referrersByLevel[i - 1];
+            uint256 refId = investors[_refId].referrersByLevel[i - 1];
             investors[_newInvestorId].referrersByLevel[i] = refId;
             investors[refId].referralsByLevel[uint8(i)].push(_newInvestorId);
         }
 
-        investors[_refId].referralsByLevel[0].push(_refId);
+        investors[_refId].referralsByLevel[0].push(_newInvestorId);
         emit ReferralRegister(investorIdToAddress[_newInvestorId], investorIdToAddress[_refId]);
     }
 
@@ -188,12 +199,14 @@ contract SmartInvestments is Ownable, Investments {
             uint256 referrerId = referrers[i];
 
             if (referrers[i] == 0) break;
-//            if (investors[referrerId].totalSum < minSumReferral) continue;
+            // if (investors[referrerId].totalSum < minSumReferral) continue;
 
             uint16[] memory percents = getRefPercents(investors[referrerId].totalSum);
             uint256 value = _sum * percents[i] / 10000;
-            if (investorIdToAddress[referrerId] != 0x0)
+            if (investorIdToAddress[referrerId] != 0x0) {
                 investorIdToAddress[referrerId].transfer(value);
+                investors[referrerId].totalReferralIncome = investors[referrerId].totalReferralIncome + value;
+            }
         }
     }
 
@@ -206,7 +219,7 @@ contract SmartInvestments is Ownable, Investments {
     function _registerIfNeeded(uint256 _refId) private returns(uint256) {
         if (addressToInvestorId[msg.sender] != 0) return 0;
 
-        uint256 id = investors.push(Investor(0, now, 0, new uint256[](refLevelsCount))) - 1;
+        uint256 id = investors.push(Investor(now, 0, 0, 0, new uint256[](refLevelsCount), 0)) - 1;
         addressToInvestorId[msg.sender] = id;
         investorIdToAddress[id] = msg.sender;
 
@@ -221,7 +234,12 @@ contract SmartInvestments is Ownable, Investments {
             _registerIfNeeded(_refId);
 
         Investor storage investor = investors[addressToInvestorId[msg.sender]];
-        investor.totalSum = investor.totalSum.add(msg.value);
+        uint256 amount = withdrawAmount();
+        investor.lastWithdraw = now;
+        investor.witharawBuffer = amount;
+        investor.totalSum = investor.totalSum + msg.value;
+
+        globalDeposit = globalDeposit + msg.value;
 
         _distribute(investor, msg.value);
 
@@ -231,16 +249,23 @@ contract SmartInvestments is Ownable, Investments {
 
     function withdrawAmount() public view returns(uint256) {
         Investor memory investor = investors[addressToInvestorId[msg.sender]];
-
-        return investor.totalSum * getProgramPercent(investor.totalSum) * ((now - investor.lastWithdraw) / 3600) / 8760;
+        return investor.totalSum * getProgramPercent(investor.totalSum) / 8760 * ((now - investor.lastWithdraw) / 3600) / 100 + investor.witharawBuffer;
     }
 
     function withdraw() public onlyForExisting returns(uint256) {
         uint256 amount = withdrawAmount();
+
         require(amount > 0);
         require(amount < address(this).balance);
 
+        Investor storage investor = investors[addressToInvestorId[msg.sender]];
+        investor.totalWithdraw = investor.totalWithdraw + amount;
+        investor.lastWithdraw = now;
+        investor.witharawBuffer = 0;
+
+        globalWithdraw = globalWithdraw + amount;
         msg.sender.transfer(amount);
+
         emit Withdraw(msg.sender, amount);
     }
 

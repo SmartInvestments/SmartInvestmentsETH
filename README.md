@@ -7,7 +7,7 @@ Safely platform for investing.
 
 # Deploying contracts
 
-RinkeBy: [0x52d2aafd9e3239004d1bcea6e5e51811366ff7ac](https://rinkeby.etherscan.io/address/0x52d2aafd9e3239004d1bcea6e5e51811366ff7ac)
+RinkeBy: [0xb3defd02efe376afc0ac483abce1ffa7420e8821](https://rinkeby.etherscan.io/address/0xb3defd02efe376afc0ac483abce1ffa7420e8821)
 
 # Test
 1. Install [truffle](http://truffleframework.com) globally with `npm install -g truffle`
@@ -17,3 +17,47 @@ RinkeBy: [0x52d2aafd9e3239004d1bcea6e5e51811366ff7ac](https://rinkeby.etherscan.
 5. Run tests with `npm test`
 
 Maybe `npm install` will want python2, then use `npm install --python2.7`.
+
+# Run local ETH network
+```bash
+chmod +x scripts/rpc.sh # if need
+./scripts/rpc.sh
+```
+
+# Get WALLETS list in local ETH networks
+```bash
+truffle console
+web3.eth.getAccounts()
+```
+
+# Transfer ETH to local network wallet
+```bash
+truffle console
+web3.eth.sendTransaction({from:'<NETWORK_WALLET>', to: '<TARGET_LOCAL_WALLET>', value: web3.utils.toWei('100', 'ether')})
+```
+
+# Compile contract
+```bash
+truffle compile
+```
+
+# Deploy to local network
+```bash
+truffle deploy
+```
+
+# Run tests
+```bash
+truffle compile
+npm test
+```
+
+# Deploy contract
+- Go to https://remix.ethereum.org/
+- Upload contract files there.
+- Choosing the main contract.
+- Deploy it where necessary!
+- Everything! You can use!
+
+# truffle config file
+- truffle.js

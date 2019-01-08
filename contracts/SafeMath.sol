@@ -1,3 +1,5 @@
+pragma solidity ^0.4.24;
+
 library SafeMath {
     function mul(uint256 _a, uint256 _b) internal pure returns(uint256) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
@@ -40,3 +42,4 @@ library SafeMath {
         return a % b;
     }
 }
+
