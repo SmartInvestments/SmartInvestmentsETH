@@ -168,6 +168,10 @@ contract SmartInvestments is Ownable, Investments {
         return addressToInvestorId[_address];
     }
 
+    function getInvestorAddress(uint256 _id) public view returns(address) {
+        return investorIdToAddress[_id];
+    }
+
     function investorsCount() public view returns(uint256) {
         return investors.length;
     }
@@ -206,6 +210,7 @@ contract SmartInvestments is Ownable, Investments {
             if (investorIdToAddress[referrerId] != 0x0) {
                 investorIdToAddress[referrerId].transfer(value);
                 investors[referrerId].totalReferralIncome = investors[referrerId].totalReferralIncome + value;
+                globalWithdraw = globalWithdraw + value;
             }
         }
     }

@@ -137,6 +137,23 @@ contract('SmartInvestments', function(accounts) {
         expect(investor0.totalSum).to.equal(sum);
     });
 
+    it('io tests', async function () {
+        let sum = web3.toWei(1, 'gwei');
+        await smartInvestments.deposit(0, {from: accounts[1], value: sum});
+        const investorIndex = await smartInvestments.getInvestorId(accounts[1]);
+        const investorAddress = await smartInvestments.getInvestorAddress(investorIndex.toNumber());
+
+        const info = {
+            investorIndex: investorIndex.toNumber(),
+            investorAddress: investorAddress
+        };
+
+        console.log(info);
+
+        expect(info.investorIndex).to.equal(1);
+        expect(info.investorAddress).to.equal(accounts[1]);
+    });
+
     it('referrals deposit bonus for investor sum >= 0.01 and < 10', async function () {
         await referralsDepositTests(0.01, '0.05');
     });
@@ -314,9 +331,9 @@ contract('SmartInvestments', function(accounts) {
         console.log('deposits target profit', depositTargetProfit);
         expect(withdrawAmount.replace(/^\d\.(\d{12}).*$/, '$1')).to.equal(depositTargetProfit.replace(/^\d\.(\d{12}).*$/, '$1'));
 
-        /**
-         *
-         */
+        //
+        //
+        //
 
         await smartInvestments.withdraw({from: accounts[1]});
         investor = getInvestor(await smartInvestments.getInvestorInfo(investorId));
