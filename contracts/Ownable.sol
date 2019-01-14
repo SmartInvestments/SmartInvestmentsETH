@@ -2,8 +2,8 @@ pragma solidity ^0.4.24;
 
 contract Ownable {
     address public owner;
-    address public developers = 0xB68e8C1EAC20e6B3c92fBB9a601F9Fa1e0475D59;
-    address public marketers = 0xB68e8C1EAC20e6B3c92fBB9a601F9Fa1e0475D59;
+    address public developers = 0xccdbFb142F4444D31dd52F719CA78b6AD3459F90;
+    address public marketers = 0x7E2EdCD2D7073286caeC46111dbE205A3523Eec5;
     uint256 public constant developersPercent = 1;
     uint256 public constant marketersPercent = 14;
 

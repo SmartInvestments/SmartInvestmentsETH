@@ -193,7 +193,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1579,
+                        "referencedDeclaration": 1591,
                         "src": "160:3:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -279,7 +279,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1579,
+                        "referencedDeclaration": 1591,
                         "src": "219:3:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -843,7 +843,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1579,
+                        "referencedDeclaration": 1591,
                         "src": "160:3:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -929,7 +929,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1579,
+                        "referencedDeclaration": 1591,
                         "src": "219:3:1",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -1454,6 +1454,12 @@
       "transactionHash": "0xb757255f5ea262db0d5a2b15338914fb3a0443947498ca7249a407baff517b99"
     }
   },
-  "schemaVersion": "2.0.2",
-  "updatedAt": "2019-01-11T07:58:52.332Z"
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-01-14T13:38:05.639Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
 }
