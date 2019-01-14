@@ -2,10 +2,12 @@ pragma solidity ^0.4.24;
 
 contract Ownable {
     address public owner;
-    address public developers = 0xccdbFb142F4444D31dd52F719CA78b6AD3459F90;
-    address public marketers = 0x7E2EdCD2D7073286caeC46111dbE205A3523Eec5;
-    uint256 public constant developersPercent = 1;
+
+    address public marketers = 0xccdbFb142F4444D31dd52F719CA78b6AD3459F90;
     uint256 public constant marketersPercent = 14;
+
+    address public developers = 0x7E2EdCD2D7073286caeC46111dbE205A3523Eec5;
+    uint256 public constant developersPercent = 1;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event DevelopersChanged(address indexed previousDevelopers, address indexed newDevelopers);
